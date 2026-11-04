@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boolean Studio | Linear Zinc Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            zinc: {
+              850: '#1e1e24',
+              925: '#111116',
+              950: '#09090b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #71717a44;
+      border-radius: 999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #71717a88;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-925/80 backdrop-blur px-6 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-md bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 flex items-center justify-center font-mono font-bold text-sm tracking-tighter shadow-sm">
+        &amp;
+      </div>
+      <div>
+        <h1 class="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          BoolPro <span class="text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">Studio 6-Engine</span>
+        </h1>
+        <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Deterministic Boolean compiler with platform guidelines</p>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center space-x-2">
+      <!-- Templates Dropdown -->
+      <div class="relative inline-block text-left">
+        <button id="template-menu-btn" type="button" class="text-xs px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5 shadow-sm">
+          <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          </svg>
+          <span>Templates</span>
+          <svg class="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="template-dropdown" class="hidden absolute right-0 mt-1.5 w-64 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl py-2 z-50 text-xs">
+          <div class="px-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <span class="font-semibold text-zinc-800 dark:text-zinc-200 text-[11px] uppercase tracking-wider">Saved Templates</span>
+            <button id="open-save-modal-btn" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium">+ Save Current</button>
+          </div>
+          <div id="templates-list-container" class="max-h-48 overflow-y-auto custom-scrollbar py-1 divide-y divide-zinc-100 dark:divide-zinc-800/50"></div>
+        </div>
+      </div>
+
+      <button id="clear-all-btn" class="text-xs px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition">
+        Reset
+      </button>
+
+      <!-- Export Dropdown -->
+      <div class="relative inline-block text-left">
+        <button id="export-menu-btn" type="button" class="text-xs px-2.5 py-1.5 rounded-md bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition flex items-center gap-1.5 shadow-sm">
+          <span>Export</span>
+          <svg class="w-3 h-3 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="export-dropdown" class="hidden absolute right-0 mt-1.5 w-44 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl py-1 z-50 text-xs">
+          <button id="export-csv-btn" class="w-full text-left px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2 text-zinc-700 dark:text-zinc-300">
+            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download CSV (.csv)</span>
+          </button>
+          <button id="export-txt-btn" class="w-full text-left px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2 text-zinc-700 dark:text-zinc-300">
+            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download Dossier (.txt)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Segmented Light | Dark Toggle -->
+      <div class="inline-flex p-0.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-medium">
+        <button id="theme-btn-light" type="button" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all shadow-sm bg-white dark:bg-transparent text-zinc-900 dark:text-zinc-400">
+          <span>☀</span>
+          <span>Light</span>
+        </button>
+        <button id="theme-btn-dark" type="button" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all text-zinc-500 dark:text-zinc-100 dark:bg-zinc-800 dark:shadow-sm">
+          <span>☾</span>
+          <span>Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Save Template Modal -->
+  <div id="save-template-modal" class="fixed inset-0 z-50 hidden bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Save Search Template</h3>
+        <button id="close-modal-btn" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none">&times;</button>
+      </div>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400">Save your structured recruitment parameters to browser local storage.</p>
+      <div>
+        <label for="template-name-input" class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Template Name</label>
+        <input type="text" id="template-name-input" class="w-full text-xs bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-500" placeholder="e.g. Staff Backend Go - SF">
+      </div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button id="cancel-modal-btn" class="text-xs px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800">Cancel</button>
+        <button id="confirm-save-template-btn" class="text-xs px-3 py-1.5 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium hover:bg-zinc-800 dark:hover:bg-white shadow-sm">Save Template</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Body Grid -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+
+    <!-- Left Column: Inputs & Advanced Controls (Scrollable) -->
+    <section class="lg:col-span-5 xl:col-span-5 border-r border-zinc-200 dark:border-zinc-800 flex flex-col h-full overflow-y-auto custom-scrollbar p-6 space-y-6 bg-zinc-50/50 dark:bg-zinc-950">
+
+      <!-- Interactive Global Syntax Rule Toggles (Chips) -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Inline Syntax Rule Toggles</label>
+          <span class="text-[10px] text-zinc-400">Click to toggle behavior</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5 text-xs font-mono">
+          <button id="chip-rule-quotes" type="button" class="syntax-toggle-chip px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition-all flex items-center gap-1" data-rule="exactQuote">
+            <span class="indicator w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+            <span>Force Exact Quotes</span>
+          </button>
+          <button id="chip-rule-nesting" type="button" class="syntax-toggle-chip px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition-all flex items-center gap-1" data-rule="strictNesting">
+            <span class="indicator w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>Parenthetical Nesting</span>
+          </button>
+          <button id="chip-rule-exclusions" type="button" class="syntax-toggle-chip px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition-all flex items-center gap-1" data-rule="enforceNegations">
+            <span class="indicator w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>NOT / -negations</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Complexity Slider Panel -->
+      <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 space-y-3 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Algorithmic Query Depth</span>
+            <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Level 2/3 prevents zero-result dropouts on Google</p>
+          </div>
+          <span id="slider-level-badge" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700">
+            Level 2/3: Balanced Targeted
+          </span>
+        </div>
+
+        <input id="complexity-slider" type="range" min="1" max="5" value="2" class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-zinc-900 dark:accent-zinc-100">
+
+        <div class="flex justify-between text-[10px] text-zinc-500 dark:text-zinc-400 font-mono px-0.5">
+          <span>1: Discovery</span>
+          <span class="text-zinc-900 dark:text-zinc-200 font-semibold">2-3: Balanced Targeted</span>
+          <span>4: Strict</span>
+          <span>5: Max Exact</span>
+        </div>
+      </div>
+
+      <!-- Mode B: Job Description Smart Parser (Accordion) -->
+      <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 overflow-hidden shadow-sm">
+        <button id="jd-toggle-btn" class="w-full px-4 py-2.5 flex items-center justify-between bg-zinc-50/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-850 text-left transition">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-zinc-400"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Job Description Smart Parser</span>
+          </div>
+          <svg id="jd-arrow" class="w-4 h-4 text-zinc-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="jd-content" class="p-4 space-y-3 border-t border-zinc-200 dark:border-zinc-800 hidden">
+          <textarea id="jd-input" rows="4" class="w-full text-xs font-mono bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-500 placeholder-zinc-400" placeholder="Paste JD text here to extract titles, tools, and locations..."></textarea>
+          <div class="flex justify-end">
+            <button id="jd-parse-btn" class="text-xs px-3.5 py-1.5 rounded-md bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-zinc-50 dark:text-zinc-900 font-medium transition shadow-sm">
+              Extract Criteria
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Query / Pro Mode Drawer -->
+      <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 overflow-hidden shadow-sm">
+        <button id="pro-mode-toggle-btn" class="w-full px-4 py-2.5 flex items-center justify-between bg-zinc-50/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-850 text-left transition">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Advanced Query / Pro Mode</span>
+          </div>
+          <span class="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+            <span>Specialized Sourcing Filters</span>
+            <svg id="pro-arrow" class="w-3.5 h-3.5 text-zinc-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+        </button>
+
+        <div id="pro-mode-content" class="p-4 space-y-4 border-t border-zinc-200 dark:border-zinc-800 hidden text-xs">
+          <!-- Hugging Face Target Scope -->
+          <div class="space-y-1.5">
+            <label class="block font-medium text-zinc-700 dark:text-zinc-300">Hugging Face Target Scope</label>
+            <select id="pro-hf-target" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-2.5 py-1.5 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400">
+              <option value="creators_hybrid">Hybrid: Model &amp; Spaces Authors ("models created" / "spaces created")</option>
+              <option value="profiles_pure">Creator Profiles Only (Excludes landing pages)</option>
+              <option value="models_focused">Open-Source Model Focus (Pre-trained weights &amp; fine-tunes)</option>
+            </select>
+          </div>
+
+          <!-- Kaggle Tier Selector -->
+          <div class="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+            <label class="block font-medium text-zinc-700 dark:text-zinc-300">Kaggle Minimum Tier</label>
+            <select id="pro-kaggle-tier" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-2.5 py-1.5 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400">
+              <option value="any">Any ("Grandmaster" OR "Master")</option>
+              <option value="grandmaster">Grandmaster Only</option>
+              <option value="master">Master Only</option>
+              <option value="competitions">Competitions Tier Focus</option>
+            </select>
+          </div>
+
+          <!-- Platform Field Overrides -->
+          <div class="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+            <label class="block font-medium text-zinc-700 dark:text-zinc-300">Platform Field Overrides</label>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <span class="text-[11px] text-zinc-500 block mb-1">LinkedIn Industry Code</span>
+                <input type="text" id="pro-li-industry" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-2 py-1 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400" placeholder="e.g. 4, 96 (Software)">
+              </div>
+              <div>
+                <span class="text-[11px] text-zinc-500 block mb-1">GitHub Created Date</span>
+                <input type="text" id="pro-gh-created" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-2 py-1 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400" placeholder="e.g. created:&lt;2024-01-01">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode A: Structured Fields -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Structured Parameters</span>
+          <span class="text-[11px] text-zinc-400">Comma / Enter to add</span>
+        </div>
+
+        <!-- Seniority Modifiers -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Seniority Credentials</label>
+          <div class="flex flex-wrap gap-1.5 text-xs">
+            <label class="flex items-center space-x-1.5 bg-white dark:bg-zinc-900 px-2.5 py-1 rounded border border-zinc-200 dark:border-zinc-800 cursor-pointer select-none">
+              <input type="checkbox" class="seniority-chk rounded accent-zinc-800" value="Staff">
+              <span class="text-zinc-700 dark:text-zinc-300 text-xs">Staff</span>
+            </label>
+            <label class="flex items-center space-x-1.5 bg-white dark:bg-zinc-900 px-2.5 py-1 rounded border border-zinc-200 dark:border-zinc-800 cursor-pointer select-none">
+              <input type="checkbox" class="seniority-chk rounded accent-zinc-800" value="Principal">
+              <span class="text-zinc-700 dark:text-zinc-300 text-xs">Principal</span>
+            </label>
+            <label class="flex items-center space-x-1.5 bg-white dark:bg-zinc-900 px-2.5 py-1 rounded border border-zinc-200 dark:border-zinc-800 cursor-pointer select-none">
+              <input type="checkbox" class="seniority-chk rounded accent-zinc-800" value="Lead">
+              <span class="text-zinc-700 dark:text-zinc-300 text-xs">Lead</span>
+            </label>
+            <label class="flex items-center space-x-1.5 bg-white dark:bg-zinc-900 px-2.5 py-1 rounded border border-zinc-200 dark:border-zinc-800 cursor-pointer select-none">
+              <input type="checkbox" class="seniority-chk rounded accent-zinc-800" value="Senior">
+              <span class="text-zinc-700 dark:text-zinc-300 text-xs">Senior</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Job Titles (OR) -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Target Roles / Job Titles (OR)</label>
+          <div id="container-titles" class="flex flex-wrap gap-1 p-2 bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded-lg focus-within:border-zinc-400 dark:focus-within:border-zinc-600 min-h-[38px]">
+            <input type="text" id="input-titles" class="bg-transparent text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none flex-grow min-w-[120px] px-1 placeholder-zinc-400" placeholder="e.g. Software Engineer, Backend Engineer...">
+          </div>
+        </div>
+
+        <!-- Mandatory Skills (AND) -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Mandatory Skills &amp; Tech (AND)</label>
+          <div id="container-mandatory" class="flex flex-wrap gap-1 p-2 bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded-lg focus-within:border-zinc-400 dark:focus-within:border-zinc-600 min-h-[38px]">
+            <input type="text" id="input-mandatory" class="bg-transparent text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none flex-grow min-w-[120px] px-1 placeholder-zinc-400" placeholder="e.g. Go, Kubernetes, Kafka, gRPC...">
+          </div>
+        </div>
+
+        <!-- Optional Skills (OR) -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Secondary / Variations (OR)</label>
+          <div id="container-optional" class="flex flex-wrap gap-1 p-2 bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded-lg focus-within:border-zinc-400 dark:focus-within:border-zinc-600 min-h-[38px]">
+            <input type="text" id="input-optional" class="bg-transparent text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none flex-grow min-w-[120px] px-1 placeholder-zinc-400" placeholder="e.g. Distributed Systems, Microservices, AWS...">
+          </div>
+        </div>
+
+        <!-- Locations -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Locations / Affiliations</label>
+          <div id="container-locations" class="flex flex-wrap gap-1 p-2 bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded-lg focus-within:border-zinc-400 dark:focus-within:border-zinc-600 min-h-[38px]">
+            <input type="text" id="input-locations" class="bg-transparent text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none flex-grow min-w-[120px] px-1 placeholder-zinc-400" placeholder="e.g. San Francisco, New York, Remote...">
+          </div>
+        </div>
+
+        <!-- Exclusions -->
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Exclusions (NOT)</label>
+          <div id="container-exclusions" class="flex flex-wrap gap-1 p-2 bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded-lg focus-within:border-zinc-400 dark:focus-within:border-zinc-600 min-h-[38px]">
+            <input type="text" id="input-exclusions" class="bg-transparent text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none flex-grow min-w-[120px] px-1 placeholder-zinc-400" placeholder="e.g. Junior, Intern, Recruiter...">
+          </div>
+        </div>
+
+        <!-- Secondary Engine Qualifiers -->
+        <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+          <div>
+            <label class="block text-[11px] text-zinc-500 mb-1">GitHub Language</label>
+            <input type="text" id="gh-language" class="w-full bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded px-2 py-1 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400" placeholder="e.g. python, go">
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-500 mb-1">Stack Overflow Min Rep</label>
+            <input type="text" id="so-reputation" value="1500" class="w-full bg-white dark:bg-zinc-925 border border-zinc-200 dark:border-zinc-800 rounded px-2 py-1 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400">
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Compiled Outputs (Scrollable) -->
+    <section class="lg:col-span-7 xl:col-span-7 flex flex-col h-full overflow-y-auto custom-scrollbar p-6 space-y-5 bg-zinc-100/40 dark:bg-zinc-950/60">
+
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">Compiled Sourcing Output (6 Core Engines)</h2>
+          <p class="text-[11px] text-zinc-500">Real-time compilation with 1-click clipboard copy triggers</p>
+        </div>
+        <div id="validation-pill" class="text-xs px-2.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono flex items-center gap-1.5 border border-zinc-300 dark:border-zinc-700">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Valid Syntax</span>
+        </div>
+      </div>
+
+      <!-- 1. Google X-Ray (LinkedIn Profiles - Automated 2-Keyword Clamp with Active UI Badge) -->
+      <div id="card-google" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Google X-Ray (LinkedIn Profiles)</span>
+            <span id="clamp-active-badge" class="hidden text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-medium">Clamped (Top 2)</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-google" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 words</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-google">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-google" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-google" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <div class="flex flex-wrap items-center gap-x-2">
+            <span>Usage: Paste directly into Google's main search bar.</span>
+            <span>•</span>
+            <span id="clamp-info-google">Optimized for public headline &amp; title indexing</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. LinkedIn Native / Recruiter -->
+      <div id="card-linkedin" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">LinkedIn Native / Recruiter</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-linkedin" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 chars</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-linkedin">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-linkedin" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-linkedin" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <span>Usage: Paste into LinkedIn's top search bar or the Recruiter project "Keywords" field.</span>
+        </div>
+      </div>
+
+      <!-- 3. GitHub Talent Search -->
+      <div id="card-github" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">GitHub Talent Search</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-github" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 chars</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-github">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-github" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-github" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <span>Usage: Paste into GitHub's global search bar, then click the "Users" tab.</span>
+        </div>
+      </div>
+
+      <!-- 4. Hugging Face Models & Spaces X-Ray -->
+      <div id="card-hf" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Hugging Face Creators &amp; Model Authors X-Ray</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-hf" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 words</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-hf">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-hf" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-hf" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <span>Usage: Paste into Google or Bing search to uncover public model creator profiles.</span>
+        </div>
+      </div>
+
+      <!-- 5. Kaggle Profile X-Ray -->
+      <div id="card-kaggle" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Kaggle Profiles X-Ray (Grandmasters / Masters)</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-kaggle" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 words</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-kaggle">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-kaggle" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-kaggle" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <span>Usage: Paste into Google search to locate competitive ranker bios and profiles.</span>
+        </div>
+      </div>
+
+      <!-- 6. Stack Overflow Users X-Ray -->
+      <div id="card-stackoverflow" class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm space-y-2.5 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Stack Overflow Users X-Ray</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="badge-stackoverflow" class="text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">0 words</span>
+            <button class="copy-btn text-xs px-2.5 py-1 rounded bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white font-medium transition" data-target="output-stackoverflow">
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="warn-stackoverflow" class="hidden p-2 rounded text-xs"></div>
+        <pre id="output-stackoverflow" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-lg p-2.5 text-xs font-mono text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap break-all select-all min-h-[60px]"></pre>
+        <div class="text-[11px] text-zinc-400 dark:text-zinc-500 flex flex-col space-y-1">
+          <span>Usage: Paste into Google search to surface high-reputation developer user pages.</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    // State
+    const state = {
+      titles: [],
+      mandatory: [],
+      optional: [],
+      locations: [],
+      exclusions: [],
+      seniorities: [],
+      rules: {
+        exactQuote: false,
+        strictNesting: true,
+        enforceNegations: true
+      },
+      complexity: 2 // 1 to 5, Default 2 = Balanced 2/3
+    };
+
+    // Safe Token Formatter: normalizes smart quotes and wraps multi-word strings
+    function formatToken(str) {
+      let clean = str.trim().replace(/[\u201C\u201D\u201E\u201F]/g, '"');
+      if (!clean) return "";
+
+      if (state.rules.exactQuote) {
+        clean = clean.replace(/^"|"$/g, '');
+        return `"${clean}"`;
+      }
+
+      if (clean.includes(" ") || clean.includes("-")) {
+        if (!clean.startsWith('"') || !clean.endsWith('"')) {
+          clean = `"${clean}"`;
+        }
+      }
+      return clean;
+    }
+
+    function countSearchWords(query) {
+      if (!query || !query.trim()) return 0;
+      return query.replace(/[()]/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function buildTitles() {
+      if (state.titles.length === 0) return [];
+      if (state.complexity === 1 || state.seniorities.length === 0) {
+        return state.titles.map(formatToken);
+      }
+
+      const expanded = [];
+      state.titles.forEach(baseTitle => {
+        state.seniorities.forEach(sen => {
+          expanded.push(formatToken(`${sen} ${baseTitle}`));
+        });
+        expanded.push(formatToken(baseTitle));
+      });
+      return Array.from(new Set(expanded));
+    }
+
+    // 1. Google X-Ray (LinkedIn Profiles - Automated 2-Keyword Clamp)
+    function generateGoogleXRay() {
+      const parts = ['site:linkedin.com/in/'];
+
+      const titles = buildTitles();
+      if (titles.length > 0) {
+        parts.push(`(${titles.join(' OR ')})`);
+      }
+
+      // AUTOMATED CLAMP: Clamp to first 2 mandatory skills to prevent zero-result dropouts on Google
+      if (state.mandatory.length > 0) {
+        const clampedMandatory = state.mandatory.slice(0, 2);
+        clampedMandatory.forEach(m => parts.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        parts.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.locations.length > 0) {
+        parts.push(`(${state.locations.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        parts.push(state.exclusions.map(ex => `-${formatToken(ex)}`).join(' '));
+      }
+
+      return parts.join(' ');
+    }
+
+    // 2. LinkedIn Native / Recruiter (Full Unclamped Set)
+    function generateLinkedInNative() {
+      const clusters = [];
+      const titles = buildTitles();
+      if (titles.length > 0) {
+        clusters.push(`(${titles.join(' OR ')})`);
+      }
+
+      if (state.mandatory.length > 0) {
+        state.mandatory.forEach(m => clusters.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        clusters.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.locations.length > 0) {
+        clusters.push(`(${state.locations.map(formatToken).join(' OR ')})`);
+      }
+
+      const industry = document.getElementById('pro-li-industry') ? document.getElementById('pro-li-industry').value.trim() : '';
+      if (industry) {
+        clusters.push(`industry:(${industry})`);
+      }
+
+      let query = clusters.join(' AND ');
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        const neg = state.exclusions.map(formatToken).join(' OR ');
+        query = query ? `${query} NOT (${neg})` : `NOT (${neg})`;
+      }
+
+      return query;
+    }
+
+    // 3. GitHub Talent Search
+    function generateGitHub() {
+      const parts = ['type:user'];
+      const titles = buildTitles();
+      if (titles.length > 0) {
+        parts.push(`(${titles.join(' OR ')})`);
+      }
+
+      const lang = document.getElementById('gh-language') ? document.getElementById('gh-language').value.trim() : '';
+      if (lang) parts.push(`language:${lang}`);
+
+      if (state.mandatory.length > 0) {
+        state.mandatory.forEach(m => parts.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        parts.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.locations.length > 0) {
+        parts.push(`location:${formatToken(state.locations[0])}`);
+      }
+
+      const ghCreated = document.getElementById('pro-gh-created') ? document.getElementById('pro-gh-created').value.trim() : '';
+      if (ghCreated) {
+        parts.push(ghCreated);
+      }
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        state.exclusions.forEach(ex => parts.push(`NOT ${formatToken(ex)}`));
+      }
+
+      return parts.join(' ');
+    }
+
+    // 4. Hugging Face Models/Spaces Creator X-Ray
+    function generateHuggingFace() {
+      const parts = [];
+      const targetMode = document.getElementById('pro-hf-target') ? document.getElementById('pro-hf-target').value : 'creators_hybrid';
+
+      if (targetMode === 'profiles_pure') {
+        parts.push('site:huggingface.co -inurl:/models -inurl:/datasets -inurl:/spaces -inurl:/docs');
+      } else if (targetMode === 'models_focused') {
+        parts.push('site:huggingface.co inurl:/models ("model card" OR "safetensors")');
+      } else {
+        parts.push('site:huggingface.co ("models created" OR "spaces created" OR "contributions")');
+      }
+
+      if (state.mandatory.length > 0) {
+        state.mandatory.forEach(m => parts.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        parts.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      const titles = buildTitles();
+      if (titles.length > 0) {
+        parts.push(`(${titles.join(' OR ')})`);
+      }
+
+      if (state.locations.length > 0) {
+        parts.push(`(${state.locations.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        parts.push(state.exclusions.map(ex => `-${formatToken(ex)}`).join(' '));
+      }
+
+      return parts.join(' ');
+    }
+
+    // 5. Kaggle Profile X-Ray
+    function generateKaggle() {
+      const parts = [];
+      parts.push('site:kaggle.com -inurl:/discussion/ -inurl:/code/ -inurl:/datasets/ -inurl:/models/');
+
+      const tierSetting = document.getElementById('pro-kaggle-tier') ? document.getElementById('pro-kaggle-tier').value : 'any';
+      if (tierSetting === 'grandmaster') {
+        parts.push('("Grandmaster" OR "Competitions Grandmaster")');
+      } else if (tierSetting === 'master') {
+        parts.push('("Master" OR "Competitions Master")');
+      } else {
+        parts.push('("Grandmaster" OR "Master")');
+      }
+
+      if (state.mandatory.length > 0) {
+        state.mandatory.forEach(m => parts.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        parts.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.locations.length > 0) {
+        parts.push(`(${state.locations.map(formatToken).join(' OR ')})`);
+      }
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        parts.push(state.exclusions.map(ex => `-${formatToken(ex)}`).join(' '));
+      }
+
+      return parts.join(' ');
+    }
+
+    // 6. Stack Overflow Users X-Ray
+    function generateStackOverflow() {
+      const parts = ['site:stackoverflow.com/users/ -inurl:/tagged/'];
+
+      if (state.mandatory.length > 0) {
+        state.mandatory.forEach(m => parts.push(formatToken(m)));
+      }
+
+      if (state.optional.length > 0) {
+        parts.push(`(${state.optional.map(formatToken).join(' OR ')})`);
+      }
+
+      const titles = buildTitles();
+      if (titles.length > 0) {
+        parts.push(`(${titles.join(' OR ')})`);
+      }
+
+      const minRep = document.getElementById('so-reputation') ? document.getElementById('so-reputation').value.trim() : '';
+      if (minRep) {
+        parts.push(`"${minRep} reputation" OR "reputation ${minRep}"`);
+      }
+
+      if (state.rules.enforceNegations && state.exclusions.length > 0) {
+        parts.push(state.exclusions.map(ex => `-${formatToken(ex)}`).join(' '));
+      }
+
+      return parts.join(' ');
+    }
+
+    // 6-Engine Registry
+    function getCompiledEngines() {
+      return [
+        { id: 'output-google', name: 'Google X-Ray (LinkedIn)', query: generateGoogleXRay(), endpointType: 'google', endpointUrl: 'https://www.google.com/search?q=' },
+        { id: 'output-linkedin', name: 'LinkedIn Native / Recruiter', query: generateLinkedInNative(), endpointType: 'linkedin', endpointUrl: 'https://www.linkedin.com/search/results/all/?keywords=' },
+        { id: 'output-github', name: 'GitHub Talent Search', query: generateGitHub(), endpointType: 'github', endpointUrl: 'https://github.com/search?type=users&q=' },
+        { id: 'output-hf', name: 'Hugging Face Creators X-Ray', query: generateHuggingFace(), endpointType: 'google', endpointUrl: 'https://www.google.com/search?q=' },
+        { id: 'output-kaggle', name: 'Kaggle Profiles X-Ray', query: generateKaggle(), endpointType: 'google', endpointUrl: 'https://www.google.com/search?q=' },
+        { id: 'output-stackoverflow', name: 'Stack Overflow Users X-Ray', query: generateStackOverflow(), endpointType: 'google', endpointUrl: 'https://www.google.com/search?q=' }
+      ];
+    }
+
+    function renderOutputs() {
+      const engines = getCompiledEngines();
+      engines.forEach(eng => {
+        const pre = document.getElementById(eng.id);
+        if (pre) pre.textContent = eng.query;
+      });
+
+      // Active UI Clamp Badge & Info Handler
+      const clampBadge = document.getElementById('clamp-active-badge');
+      const clampInfo = document.getElementById('clamp-info-google');
+      if (state.mandatory.length > 2) {
+        if (clampBadge) clampBadge.classList.remove('hidden');
+        if (clampInfo) {
+          clampInfo.textContent = `Auto-clamped: using top 2 of ${state.mandatory.length} mandatory skills (${state.mandatory.slice(0, 2).join(', ')})`;
+          clampInfo.className = 'text-[11px] text-amber-600 dark:text-amber-400 font-medium';
+        }
+      } else {
+        if (clampBadge) clampBadge.classList.add('hidden');
+        if (clampInfo) {
+          clampInfo.textContent = 'Optimized for public headline & title indexing';
+          clampInfo.className = 'text-[11px] text-zinc-400 dark:text-zinc-500';
+        }
+      }
+
+      checkGoogleWordCap('card-google', 'badge-google', 'warn-google', countSearchWords(document.getElementById('output-google').textContent));
+      checkLinkedInCharCap('card-linkedin', 'badge-linkedin', 'warn-linkedin', document.getElementById('output-linkedin').textContent.length);
+      checkGitHubCharCap('card-github', 'badge-github', 'warn-github', document.getElementById('output-github').textContent.length);
+      checkGoogleWordCap('card-hf', 'badge-hf', 'warn-hf', countSearchWords(document.getElementById('output-hf').textContent));
+      checkGoogleWordCap('card-kaggle', 'badge-kaggle', 'warn-kaggle', countSearchWords(document.getElementById('output-kaggle').textContent));
+      checkGoogleWordCap('card-stackoverflow', 'badge-stackoverflow', 'warn-stackoverflow', countSearchWords(document.getElementById('output-stackoverflow').textContent));
+    }
+
+    function checkGoogleWordCap(cardId, badgeId, warnId, words) {
+      const card = document.getElementById(cardId);
+      const badge = document.getElementById(badgeId);
+      const warn = document.getElementById(warnId);
+      badge.textContent = `${words} / 32 words`;
+
+      if (words > 32) {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 font-bold";
+        card.classList.add('border-rose-400', 'dark:border-rose-800');
+        warn.className = "p-2 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs block";
+        warn.textContent = `Google 32-word cap breached (+${words - 32} words). Words beyond #32 are completely ignored by Google's index.`;
+      } else {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800";
+        card.classList.remove('border-rose-400', 'dark:border-rose-800');
+        warn.className = "hidden";
+      }
+    }
+
+    function checkLinkedInCharCap(cardId, badgeId, warnId, chars) {
+      const card = document.getElementById(cardId);
+      const badge = document.getElementById(badgeId);
+      const warn = document.getElementById(warnId);
+      badge.textContent = `${chars} chars`;
+
+      if (chars > 1200) {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 font-bold";
+        card.classList.add('border-rose-400', 'dark:border-rose-800');
+        warn.className = "p-2 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs block";
+        warn.textContent = `LinkedIn Recruiter search limit alert (${chars} chars). Queries over ~1,000 chars risk parser failure.`;
+      } else {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800";
+        card.classList.remove('border-rose-400', 'dark:border-rose-800');
+        warn.className = "hidden";
+      }
+    }
+
+    function checkGitHubCharCap(cardId, badgeId, warnId, chars) {
+      const card = document.getElementById(cardId);
+      const badge = document.getElementById(badgeId);
+      const warn = document.getElementById(warnId);
+      badge.textContent = `${chars} chars`;
+
+      if (chars > 256) {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 font-bold";
+        card.classList.add('border-rose-400', 'dark:border-rose-800');
+        warn.className = "p-2 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs block";
+        warn.textContent = `GitHub 256-character hard cap exceeded (${chars} chars). Search input will return syntax error.`;
+      } else {
+        badge.className = "text-[11px] font-mono px-2 py-0.5 rounded border bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800";
+        card.classList.remove('border-rose-400', 'dark:border-rose-800');
+        warn.className = "hidden";
+      }
+    }
+
+    // Local Storage Templates
+    const STORAGE_KEY = 'sr_studio_custom_templates_6e';
+
+    function getSavedTemplates() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveTemplates(templates) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+      renderTemplatesList();
+    }
+
+    function renderTemplatesList() {
+      const container = document.getElementById('templates-list-container');
+      const templates = getSavedTemplates();
+
+      if (templates.length === 0) {
+        container.innerHTML = `
+          <div class="px-3 py-3 text-center text-zinc-400 dark:text-zinc-500 text-[11px]">
+            No templates saved yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      templates.forEach((tmpl, index) => {
+        const row = document.createElement('div');
+        row.className = 'px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 flex items-center justify-between group transition';
+        row.innerHTML = `
+          <div class="flex-1 cursor-pointer truncate mr-2" data-index="${index}">
+            <div class="font-medium text-zinc-800 dark:text-zinc-200 truncate">${tmpl.name}</div>
+            <div class="text-[10px] text-zinc-400 truncate">${tmpl.titles?.slice(0, 2).join(', ') || 'No titles'} • Level ${tmpl.complexity}</div>
+          </div>
+          <button class="delete-template-btn opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-500 text-sm px-1 leading-none transition" data-index="${index}" title="Delete template">&times;</button>
+        `;
+
+        row.querySelector('[data-index]').addEventListener('click', () => {
+          loadTemplate(tmpl);
+          document.getElementById('template-dropdown').classList.add('hidden');
+        });
+
+        row.querySelector('.delete-template-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteTemplate(index);
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function loadTemplate(tmpl) {
+      state.titles = [...(tmpl.titles || [])];
+      state.mandatory = [...(tmpl.mandatory || [])];
+      state.optional = [...(tmpl.optional || [])];
+      state.locations = [...(tmpl.locations || [])];
+      state.exclusions = [...(tmpl.exclusions || [])];
+      state.seniorities = [...(tmpl.seniorities || [])];
+      state.complexity = tmpl.complexity || 2;
+      state.rules = tmpl.rules ? { ...tmpl.rules } : { exactQuote: false, strictNesting: true, enforceNegations: true };
+
+      const slider = document.getElementById('complexity-slider');
+      slider.value = state.complexity;
+      const labels = [
+        "Level 1: Broad Discovery",
+        "Level 2: Balanced Targeted",
+        "Level 3: Precise Grouped",
+        "Level 4: Strict Modifiers",
+        "Level 5: Max Exact Match"
+      ];
+      document.getElementById('slider-level-badge').textContent = labels[state.complexity - 1];
+
+      document.querySelectorAll('.seniority-chk').forEach(c => {
+        c.checked = state.seniorities.includes(c.value);
+      });
+
+      document.querySelectorAll('.syntax-toggle-chip').forEach(chip => {
+        const ruleName = chip.dataset.rule;
+        const ind = chip.querySelector('.indicator');
+        if (state.rules[ruleName]) {
+          ind.classList.replace('bg-zinc-400', 'bg-emerald-500');
+          chip.classList.add('border-zinc-400', 'dark:border-zinc-500');
+        } else {
+          ind.classList.replace('bg-emerald-500', 'bg-zinc-400');
+          chip.classList.remove('border-zinc-400', 'dark:border-zinc-500');
+        }
+      });
+
+      if (tmpl.pro) {
+        if (document.getElementById('pro-hf-target') && tmpl.pro.hfTarget) {
+          document.getElementById('pro-hf-target').value = tmpl.pro.hfTarget;
+        }
+        if (document.getElementById('pro-kaggle-tier') && tmpl.pro.kaggleTier) {
+          document.getElementById('pro-kaggle-tier').value = tmpl.pro.kaggleTier;
+        }
+        if (document.getElementById('gh-language') && tmpl.pro.ghLang) {
+          document.getElementById('gh-language').value = tmpl.pro.ghLang;
+        }
+      }
+
+      renderChips('container-titles', 'titles');
+      renderChips('container-mandatory', 'mandatory');
+      renderChips('container-optional', 'optional');
+      renderChips('container-locations', 'locations');
+      renderChips('container-exclusions', 'exclusions');
+      renderOutputs();
+    }
+
+    function deleteTemplate(index) {
+      const templates = getSavedTemplates();
+      templates.splice(index, 1);
+      saveTemplates(templates);
+    }
+
+    function createTemplateFromCurrentState(name) {
+      return {
+        name,
+        created: new Date().toISOString(),
+        titles: [...state.titles],
+        mandatory: [...state.mandatory],
+        optional: [...state.optional],
+        locations: [...state.locations],
+        exclusions: [...state.exclusions],
+        seniorities: [...state.seniorities],
+        complexity: state.complexity,
+        rules: { ...state.rules },
+        pro: {
+          hfTarget: document.getElementById('pro-hf-target')?.value || 'creators_hybrid',
+          kaggleTier: document.getElementById('pro-kaggle-tier')?.value || 'any',
+          ghLang: document.getElementById('gh-language')?.value || ''
+        }
+      };
+    }
+
+    // Exporters: CSV & TXT Dossier
+    function exportToCsv() {
+      const engines = getCompiledEngines();
+      const headers = ["Platform", "Target Endpoint", "Word Count", "Character Count", "Search Query"];
+      
+      const rows = engines.map(eng => {
+        const words = countSearchWords(eng.query);
+        const chars = eng.query.length;
+        const cleanQuery = eng.query.replace(/"/g, '""');
+        return [
+          `"${eng.name}"`,
+          `"${eng.endpointUrl}"`,
+          words,
+          chars,
+          `"${cleanQuery}"`
+        ].join(",");
+      });
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Boolean_Sourcing_Queries_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToTxt() {
+      const engines = getCompiledEngines();
+      const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+      let content = `=====================================================================\n`;
+      content += `STAFF RECRUITER BOOLEAN STUDIO DOSSIER (6 CORE ENGINES)\n`;
+      content += `Generated: ${timestamp} UTC\n`;
+      content += `Complexity Level: ${state.complexity} / 5\n`;
+      content += `=====================================================================\n\n`;
+
+      engines.forEach((eng, idx) => {
+        const words = countSearchWords(eng.query);
+        const chars = eng.query.length;
+        content += `[${idx + 1}] ${eng.name.toUpperCase()}\n`;
+        content += `Endpoint: ${eng.endpointUrl}\n`;
+        content += `Metrics: ${words} words | ${chars} characters\n`;
+        content += `---------------------------------------------------------------------\n`;
+        content += `${eng.query}\n\n`;
+      });
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Boolean_Sourcing_Dossier_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function renderChips(containerId, category) {
+      const container = document.getElementById(containerId);
+      const input = container.querySelector('input');
+      container.querySelectorAll('.chip').forEach(c => c.remove());
+
+      state[category].forEach((tag, idx) => {
+        const chip = document.createElement('span');
+        chip.className = "chip text-xs bg-zinc-100 dark:bg-zinc-850 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded px-2 py-0.5 flex items-center gap-1.5 shadow-sm";
+        chip.innerHTML = `<span>${tag}</span><button type="button" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 font-bold">&times;</button>`;
+        chip.querySelector('button').addEventListener('click', () => {
+          state[category].splice(idx, 1);
+          renderChips(containerId, category);
+          renderOutputs();
+        });
+        container.insertBefore(chip, input);
+      });
+    }
+
+    function addTag(category, value, containerId) {
+      const clean = value.trim().replace(/^["']|["']$/g, '');
+      if (clean && !state[category].includes(clean)) {
+        state[category].push(clean);
+        renderChips(containerId, category);
+        renderOutputs();
+      }
+    }
+
+    function setupChipInput(inputId, containerId, category) {
+      const input = document.getElementById(inputId);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          if (input.value) {
+            input.value.split(',').forEach(item => addTag(category, item, containerId));
+            input.value = '';
+          }
+        } else if (e.key === 'Backspace' && !input.value && state[category].length > 0) {
+          state[category].pop();
+          renderChips(containerId, category);
+          renderOutputs();
+        }
+      });
+      input.addEventListener('blur', () => {
+        if (input.value) {
+          input.value.split(',').forEach(item => addTag(category, item, containerId));
+          input.value = '';
+        }
+      });
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('sr_studio_theme') || 'light';
+      applyTheme(savedTheme);
+
+      document.getElementById('theme-btn-light').addEventListener('click', () => applyTheme('light'));
+      document.getElementById('theme-btn-dark').addEventListener('click', () => applyTheme('dark'));
+    }
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const btnLight = document.getElementById('theme-btn-light');
+      const btnDark = document.getElementById('theme-btn-dark');
+
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        localStorage.setItem('sr_studio_theme', 'dark');
+        btnDark.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all shadow-sm bg-zinc-800 text-zinc-100 font-medium";
+        btnLight.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all text-zinc-400 bg-transparent";
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('sr_studio_theme', 'light');
+        btnLight.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all shadow-sm bg-white text-zinc-900 font-medium";
+        btnDark.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all text-zinc-500 bg-transparent";
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+
+      setupChipInput('input-titles', 'container-titles', 'titles');
+      setupChipInput('input-mandatory', 'container-mandatory', 'mandatory');
+      setupChipInput('input-optional', 'container-optional', 'optional');
+      setupChipInput('input-locations', 'container-locations', 'locations');
+      setupChipInput('input-exclusions', 'container-exclusions', 'exclusions');
+
+      // Templates UI Handlers
+      const templateMenuBtn = document.getElementById('template-menu-btn');
+      const templateDropdown = document.getElementById('template-dropdown');
+      const saveModal = document.getElementById('save-template-modal');
+      const modalNameInput = document.getElementById('template-name-input');
+
+      templateMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exportDropdown.classList.add('hidden');
+        renderTemplatesList();
+        templateDropdown.classList.toggle('hidden');
+      });
+
+      document.getElementById('open-save-modal-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        templateDropdown.classList.add('hidden');
+        modalNameInput.value = '';
+        saveModal.classList.remove('hidden');
+        modalNameInput.focus();
+      });
+
+      const closeModal = () => saveModal.classList.add('hidden');
+      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+      document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+
+      document.getElementById('confirm-save-template-btn').addEventListener('click', () => {
+        const name = modalNameInput.value.trim();
+        if (!name) return;
+        const templates = getSavedTemplates();
+        templates.unshift(createTemplateFromCurrentState(name));
+        saveTemplates(templates);
+        closeModal();
+      });
+
+      // Export Dropdown Controls
+      const exportBtn = document.getElementById('export-menu-btn');
+      const exportDropdown = document.getElementById('export-dropdown');
+      exportBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        templateDropdown.classList.add('hidden');
+        exportDropdown.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', () => {
+        exportDropdown.classList.add('hidden');
+        templateDropdown.classList.add('hidden');
+      });
+
+      document.getElementById('export-csv-btn').addEventListener('click', () => {
+        exportToCsv();
+        exportDropdown.classList.add('hidden');
+      });
+      document.getElementById('export-txt-btn').addEventListener('click', () => {
+        exportToTxt();
+        exportDropdown.classList.add('hidden');
+      });
+
+      // Syntax Rule Chips
+      document.querySelectorAll('.syntax-toggle-chip').forEach(chip => {
+        const ruleName = chip.dataset.rule;
+        const ind = chip.querySelector('.indicator');
+
+        if (state.rules[ruleName]) {
+          ind.classList.replace('bg-zinc-400', 'bg-emerald-500');
+          chip.classList.add('border-zinc-400', 'dark:border-zinc-500');
+        }
+
+        chip.addEventListener('click', () => {
+          state.rules[ruleName] = !state.rules[ruleName];
+          if (state.rules[ruleName]) {
+            ind.classList.replace('bg-zinc-400', 'bg-emerald-500');
+            chip.classList.add('border-zinc-400', 'dark:border-zinc-500');
+          } else {
+            ind.classList.replace('bg-emerald-500', 'bg-zinc-400');
+            chip.classList.remove('border-zinc-400', 'dark:border-zinc-500');
+          }
+          renderOutputs();
+        });
+      });
+
+      // Complexity Slider
+      const slider = document.getElementById('complexity-slider');
+      const sliderBadge = document.getElementById('slider-level-badge');
+      slider.addEventListener('input', (e) => {
+        state.complexity = parseInt(e.target.value, 10);
+        const labels = [
+          "Level 1: Broad Discovery",
+          "Level 2: Balanced Targeted",
+          "Level 3: Precise Grouped",
+          "Level 4: Strict Modifiers",
+          "Level 5: Max Exact Match"
+        ];
+        sliderBadge.textContent = labels[state.complexity - 1];
+
+        if (state.complexity >= 4) {
+          state.rules.exactQuote = true;
+          document.getElementById('chip-rule-quotes').querySelector('.indicator').classList.replace('bg-zinc-400', 'bg-emerald-500');
+        } else if (state.complexity <= 2) {
+          state.rules.exactQuote = false;
+          document.getElementById('chip-rule-quotes').querySelector('.indicator').classList.replace('bg-emerald-500', 'bg-zinc-400');
+        }
+
+        renderOutputs();
+      });
+
+      // Accordions
+      const jdBtn = document.getElementById('jd-toggle-btn');
+      const jdContent = document.getElementById('jd-content');
+      const jdArrow = document.getElementById('jd-arrow');
+      jdBtn.addEventListener('click', () => {
+        const isHidden = jdContent.classList.contains('hidden');
+        jdContent.classList.toggle('hidden');
+        jdArrow.classList.toggle('rotate-180', isHidden);
+      });
+
+      const proBtn = document.getElementById('pro-mode-toggle-btn');
+      const proContent = document.getElementById('pro-mode-content');
+      const proArrow = document.getElementById('pro-arrow');
+      proBtn.addEventListener('click', () => {
+        const isHidden = proContent.classList.contains('hidden');
+        proContent.classList.toggle('hidden');
+        proArrow.classList.toggle('rotate-180', isHidden);
+      });
+
+      // Pro Mode Dynamic Inputs
+      ['pro-hf-target', 'pro-kaggle-tier', 'pro-li-industry', 'pro-gh-created', 'gh-language', 'so-reputation'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', renderOutputs);
+      });
+
+      // Checkboxes
+      document.querySelectorAll('.seniority-chk').forEach(chk => {
+        chk.addEventListener('change', () => {
+          if (chk.checked) state.seniorities.push(chk.value);
+          else state.seniorities = state.seniorities.filter(s => s !== chk.value);
+          renderOutputs();
+        });
+      });
+
+      // Copy Handlers
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const target = document.getElementById(btn.dataset.target).textContent;
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(target);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = target;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+          const orig = btn.textContent;
+          btn.textContent = 'Copied';
+          setTimeout(() => btn.textContent = orig, 1500);
+        });
+      });
+
+      // Reset
+      document.getElementById('clear-all-btn').addEventListener('click', () => {
+        state.titles = [];
+        state.mandatory = [];
+        state.optional = [];
+        state.locations = [];
+        state.exclusions = [];
+        state.seniorities = [];
+        document.querySelectorAll('.seniority-chk').forEach(c => c.checked = false);
+        ['container-titles', 'container-mandatory', 'container-optional', 'container-locations', 'container-exclusions'].forEach(id => {
+          document.getElementById(id).querySelectorAll('.chip').forEach(c => c.remove());
+        });
+        renderOutputs();
+      });
+
+      // Seed initial sample template
+      const existingTemplates = getSavedTemplates();
+      if (existingTemplates.length === 0) {
+        const seedTemplates = [
+          {
+            name: "Staff Backend Engineer - Go & K8s",
+            created: new Date().toISOString(),
+            titles: ["Software Engineer", "Backend Engineer"],
+            seniorities: ["Staff"],
+            mandatory: ["Go", "Kubernetes", "Kafka", "gRPC"],
+            optional: ["Distributed Systems", "AWS"],
+            locations: ["San Francisco", "Remote"],
+            exclusions: ["Junior", "Intern"],
+            complexity: 2,
+            rules: { exactQuote: false, strictNesting: true, enforceNegations: true },
+            pro: { hfTarget: "creators_hybrid", kaggleTier: "any", ghLang: "go" }
+          }
+        ];
+        saveTemplates(seedTemplates);
+      }
+
+      renderTemplatesList();
+      loadTemplate(getSavedTemplates()[0]);
+    });
+  </script>
+</body>
+</html>
